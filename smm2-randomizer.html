@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SMM2 Randomizer</title>
+</head>
+<body>
+  <button onclick="roll()">Roll Filters</button>
+  <button onclick="toggleRegion()">Toggle Region</button>
+  <script>
+    let showRegion = false;
+  
+    let filters = [
+        {
+            id: 'Game Style',
+            values: ['SMB', 'SMB3', 'SMW', 'NSMBU', '3D World', 'All']
+        },
+        {
+            id: 'Course Theme',
+            values: ['Ground', 'Underground', 'Sky', 'Snow', 'Desert', 'Airship', 'Ghost House', 'Castle', 'Forest', 'Underwater', 'All']
+        },
+        {
+            id: 'Difficulty',
+            values: ['Easy', 'Normal', 'Expert', 'Super Expert', 'All']
+        },
+        {
+            id: 'Date Uploaded',
+            values: ['Within 30 days', 'Within 90 days', 'Within 1 year', 'All']
+        },
+        {
+            id: 'Number of Plays',
+            values: ['100 or fewer plays', '500 or fewer plays', '1,000 or fewer plays', '10,000 or fewer plays', 'All']
+        },
+        {
+            id: 'Region',
+            values: ['My region', 'Europe', 'Asia', 'Other', 'All']
+        },
+        {
+            id: 'Tags',
+            values: ['Standard', 'Puzzle-solving', 'Speedrun', 'Autoscroll', 'Auto-Mario', 'Short and sweet', 'Multiplayer Versus', 'Themed', 'Music', 'Art', 'Technical', 'Shooter', 'Boss battle', 'Single player', 'Link', 'None', 'All'],
+            draw: 2
+        }
+    ];
+    
+    function chooseMany(list, n) {
+        if (n > list.length) {
+            throw 'Cannot choose ' + n + ' items from list of length ' + list.length;
+        }
+        
+        //Randomly select n indices (not particularly efficiently but whatever)
+        let indices = {};
+        for (let i = 0; i < n; i++) {
+            let index;
+            //Select a random index that hasn't already been selected
+            do {
+                index = Math.floor(Math.random() * list.length);
+            } while (index in indices);
+            indices[index] = true;
+        }
+        
+        //Get items at selected indices
+        let chosen = [];
+        for (let index in indices) {
+            chosen.push(list[index]);
+        }
+        
+        return chosen;
+    }
+    
+    function roll() {
+        for (let filter of filters) {
+            //Either find or create div by id
+            let div = document.getElementById(filter.id);
+            if (!div) {
+                div = document.createElement('div');
+                div.id = filter.id;
+                document.body.appendChild(div);
+            }
+            
+            //Roll new values. Default 1 value per filter
+            div.innerHTML = filter.id + ': ' + chooseMany(filter.values, filter.draw || 1).join(', ');
+        }
+    }
+    
+    function showOrHideRegion() {
+        let div = document.getElementById('Region');
+        if (showRegion) {
+            div.style = '';
+        } else {
+            div.style = 'display: none;';
+        }
+    }
+    
+    function toggleRegion() {
+        showRegion = !showRegion;
+        showOrHideRegion();
+    }
+    
+    //Initialize
+    roll();
+    showOrHideRegion();
+  </script>
+</body>
+</html>
